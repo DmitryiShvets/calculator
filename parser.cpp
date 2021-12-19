@@ -1,12 +1,14 @@
 //
-// Created by Dmitry on 10.12.2021.
+// Created by dmirty on 11.12.2021.
 //
 
 #include "parser.h"
-#include <fstream>
+
 #include <sstream>
-#include <cassert>
+#include <fstream>
+#include "token.h"
 #include "rwlib.h"
+#include <cassert>
 
 template<typename T>
 std::string toString(T const &list) {
@@ -68,36 +70,16 @@ Token *Parser::nextToken() {
                 if (_data._precedence.contains(key)) {
                     _curPos++;
                     return new Operation(key);
-                } else throw std::invalid_argument("ERROR - INCORRECT INPUT");
+                } else throw  std::invalid_argument("ERROR - INCORRECT INPUT");
         }
 
     }
+
+
 }
 
-std::string Parser::parse(const std::string &input) {
-    _data._input = input;
-    _data._tokenRaw.emplace(new LeftPar);
-    _data._input += ")";
-    _curPos = 0;
-    while (!_data._tokenRaw.empty()) {
-        auto tmp = nextToken();
-        tmp->update(_data);
-    }
-
-    auto result = toString(_data._tokenPostfix);
-
-    calculate();
-
-    for (auto &x: _data._tokenPostfix) {
-        delete x;
-    }
-
-    _data._tokenPostfix.clear();
-    return result;
-}
 
 void pars_tests(Parser p) {
-// * - + находятся в файле операторов
     p._data._input = " 35   * ( 4 - 11   ) + 27";
 
     Token *t = p.nextToken();
@@ -134,6 +116,60 @@ void pars_tests(Parser p) {
     assert((std::string) (*t) == ")");
     assert(dynamic_cast<RightPar *>(t));
     delete t;
+    // при обработке строк ниже должны выбрасываться исключения
+
+    p._data._input = "4566q";
+    p._curPos = 0;
+    t = p.nextToken();
+    try {
+        t = p.nextToken();
+        assert(false);
+        delete t;
+    }
+    catch (std::exception) {}
+
+    p._data._input = "yu";
+    p._curPos = 0;
+    try {
+        t = p.nextToken();
+        assert(false);
+        delete t;
+    }
+    catch (std::exception) {}
+
+    // оператора &&& в файле операторов нет
+    p._data._input = " 35   &&& 4";
+    p._curPos = 0;
+    t = p.nextToken();
+    delete t;
+    try {
+        t = p.nextToken();
+        assert(false);
+        delete t;
+    }
+    catch (std::exception) {}
+}
+
+std::string Parser::parse(const std::string &input) {
+    _data._input = input;
+    _data._tokenRaw.emplace(new LeftPar);
+    _data._input += ")";
+    _curPos = 0;
+    while (!_data._tokenRaw.empty()) {
+        auto tmp = nextToken();
+        tmp->update(_data);
+    }
+
+    auto result = toString(_data._tokenPostfix);
+
+    calculate();
+
+    for (auto &x: _data._tokenPostfix) {
+        delete x;
+    }
+
+    _data._tokenPostfix.clear();
+    return result;;
 }
 
 void Parser::calculate() {

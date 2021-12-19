@@ -1,5 +1,5 @@
 //
-// Created by Dmitry on 10.12.2021.
+// Created by dmirty on 11.12.2021.
 //
 
 #ifndef LESSON24_RWLIB_H
@@ -30,6 +30,14 @@ void Print(T *value, int size) {
     }
 }
 
+template<typename T>
+void Println(T *value, int size) {
+    for (int i = 0; i < size; ++i) {
+        std::cout << value[i] << " ";
+    }
+    Print();
+}
+
 template<class T>
 void Print(const std::vector<T> &vec) {
     for (typename std::vector<T>::const_iterator iter = vec.cbegin(); iter != vec.cend(); ++iter) {
@@ -46,6 +54,14 @@ void Print(const T &text, Args... args) // recursive variadic function
 
 template<typename T>
 T Read() {
+    T result;
+    std::cin >> result;
+    return result;
+}
+
+template<typename T>
+T Read(std::string text) {
+    std::cout << text;
     T result;
     std::cin >> result;
     return result;

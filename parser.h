@@ -1,13 +1,11 @@
 //
-// Created by Dmitry on 10.12.2021.
+// Created by dmirty on 11.12.2021.
 //
 
 #ifndef LESSON24_PARSER_H
 #define LESSON24_PARSER_H
 
-#include <string>
-#include "token.h"
-
+#include "parserdata.h"
 
 class Parser {
 public:
@@ -21,16 +19,19 @@ public:
 
     int getResult();
 
+
 private:
     int parseInt();
 
     Token *nextToken();
 
-    int _result;
     ParserData _data;
     int _curPos;
+    int _result;
 
     void calculate();
+
+
 
 };
 

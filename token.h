@@ -1,5 +1,5 @@
 //
-// Created by Dmitry on 10.12.2021.
+// Created by dmirty on 11.12.2021.
 //
 
 #ifndef LESSON24_TOKEN_H
@@ -11,7 +11,7 @@ class Token {
 public:
     virtual void update(ParserData &data) = 0;
 
-    virtual explicit operator std::string() = 0;
+    virtual  operator std::string() = 0;
 
     virtual ~Token() = default;
 
@@ -19,6 +19,7 @@ public:
 
     void opsWithHigherPrecedence(ParserData &pd, int precedence);
 };
+
 
 class Number : public Token {
 public:
@@ -69,5 +70,7 @@ public:
     ~RightPar() override = default;
 
 };
+
+
 
 #endif //LESSON24_TOKEN_H
