@@ -9,6 +9,7 @@
 
 class Parser {
 public:
+
     explicit Parser(std::string path);
 
     void printMap();
@@ -19,8 +20,17 @@ public:
 
     int getResult();
 
+    virtual ~Parser();
+
+    void printTree();
 
 private:
+    void buildAst(std::list<Token *> &list);
+
+    void printNode(TokenNode *ptr, int level = 0);
+
+    void clear();
+
     int parseInt();
 
     Token *nextToken();
@@ -29,8 +39,9 @@ private:
     int _curPos;
     int _result;
 
-    void calculate();
+    AstData _ast;
 
+    void calculate();
 
 
 };

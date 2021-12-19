@@ -13,6 +13,8 @@ public:
 
     virtual  operator std::string() = 0;
 
+    virtual void update(AstData &ast)=0;
+
     virtual ~Token() = default;
 
     void untilLeftPar(ParserData &pd);
@@ -28,9 +30,12 @@ public:
 
     void update(ParserData &data) override;
 
+
     explicit operator std::string() override;
 
     ~Number() override = default;
+
+    void update(AstData &ast) override;
 
 private:
     int _number;
@@ -47,6 +52,8 @@ public:
 
     ~Operation() override = default;
 
+    void update(AstData &ast) override;
+
 private:
     std::string _op;
 };
@@ -59,6 +66,8 @@ public:
 
     ~LeftPar() override = default;
 
+    void update(AstData &ast) override;
+
 };
 
 class RightPar : public Token {
@@ -68,6 +77,8 @@ public:
     void update(ParserData &data) override;
 
     ~RightPar() override = default;
+
+    void update(AstData &ast) override;
 
 };
 

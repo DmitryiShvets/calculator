@@ -70,7 +70,7 @@ Token *Parser::nextToken() {
                 if (_data._precedence.contains(key)) {
                     _curPos++;
                     return new Operation(key);
-                } else throw  std::invalid_argument("ERROR - INCORRECT INPUT");
+                } else throw std::invalid_argument("ERROR - INCORRECT INPUT");
         }
 
     }
@@ -151,6 +151,8 @@ void pars_tests(Parser p) {
 }
 
 std::string Parser::parse(const std::string &input) {
+    clear();
+
     _data._input = input;
     _data._tokenRaw.emplace(new LeftPar);
     _data._input += ")";
@@ -162,13 +164,11 @@ std::string Parser::parse(const std::string &input) {
 
     auto result = toString(_data._tokenPostfix);
 
+    buildAst(_data._tokenPostfix);
+
     calculate();
 
-    for (auto &x: _data._tokenPostfix) {
-        delete x;
-    }
 
-    _data._tokenPostfix.clear();
     return result;;
 }
 
@@ -184,32 +184,32 @@ void Parser::calculate() {
                 stack.push(new Number(std::stoi(std::string(*x))));
                 break;
             case '+':
-                lhs = std::stoi(std::string(*stack.top()));
-                stack.pop();
                 rhs = std::stoi(std::string(*stack.top()));
+                stack.pop();
+                lhs = std::stoi(std::string(*stack.top()));
                 stack.pop();
                 stack.push(new Number(lhs + rhs));
                 break;
             case '-':
-                lhs = std::stoi(std::string(*stack.top()));
-                stack.pop();
                 rhs = std::stoi(std::string(*stack.top()));
                 stack.pop();
-                stack.push(new Number(rhs - lhs));
+                lhs = std::stoi(std::string(*stack.top()));
+                stack.pop();
+                stack.push(new Number(lhs - rhs));
                 break;
             case '*':
-                lhs = std::stoi(std::string(*stack.top()));
-                stack.pop();
                 rhs = std::stoi(std::string(*stack.top()));
+                stack.pop();
+                lhs = std::stoi(std::string(*stack.top()));
                 stack.pop();
                 stack.push(new Number(lhs * rhs));
                 break;
             case '/':
-                lhs = std::stoi(std::string(*stack.top()));
-                stack.pop();
                 rhs = std::stoi(std::string(*stack.top()));
                 stack.pop();
-                stack.push(new Number(rhs / lhs));
+                lhs = std::stoi(std::string(*stack.top()));
+                stack.pop();
+                stack.push(new Number(lhs / rhs));
                 break;
 
         }
@@ -222,5 +222,43 @@ void Parser::calculate() {
 int Parser::getResult() {
     return _result;
 }
+
+Parser::~Parser() {
+    clear();
+}
+
+void Parser::clear() {
+    for (auto &x: _data._tokenPostfix) {
+        delete x;
+    }
+
+    _data._tokenPostfix.clear();
+}
+
+void Parser::buildAst(std::list<Token *> &list) {
+    _ast._tokens = list;
+
+    for (auto *token: _ast._tokens) {
+        token->update(_ast);
+    }
+}
+
+void Parser::printNode(TokenNode *ptr, int level) {
+
+
+    if (ptr) {
+        printNode(ptr->right, level + 1);
+        for (int i = 0; i < level; i++) std::cout << "   ";
+        std::cout << (std::string)*ptr->data << std::endl;
+        printNode(ptr->left, level + 1);
+    }
+}
+
+void Parser::printTree() {
+    auto *p = _ast._stack.top();
+    printNode(p);
+}
+
+
 
 
